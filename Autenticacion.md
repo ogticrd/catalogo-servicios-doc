@@ -58,9 +58,7 @@ POST /auth/login
 
 **Respuesta**
 - `access_token` **string**: Token de acceso temporal que se usará en las solicitudes de seguimiento. Nota: si lo usaste como modo en la solicitud, el token de acceso no se devolverá en el JSON.session
-
 - `expires` **integer**: Cuánto tiempo pasará antes de que caduque el token de acceso. El valor se expresa en milisegundos.
-
 - `refresh_token` **string**: El token que se puede usar para recuperar un nuevo token de acceso a través de /auth/refresh. Nota: si usaste `cookie` o `session` como el modo en la solicitud, el token de actualización no se devolverá en el JSON.
 
 > Tiempo de caducidad
