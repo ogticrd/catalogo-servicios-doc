@@ -177,17 +177,3 @@ El elemento primario de nivel superior se devolverá si una de las categorías t
 
 obtendrá todos los elementos principales que no tengan la categoría "Receta"
 
-## Variables dinámicas
-
-Además de los valores estáticos, también puede filtrar por valores dinámicos mediante las siguientes variables.
-
-- `$CURRENT_USER` — La clave principal del usuario autenticado actualmente
-- `$CURRENT_ROLE` — La clave principal de la función para el usuario autenticado actualmente
-- `$NOW` — La marca de tiempo actual
-- $`NOW(<adjustment>)` - La marca de tiempo actual más/menos una distancia dada, por ejemplo, , $NOW(-1 year)$NOW(+2 hours)
-
-> **Funciones**
->
-> También puede utilizar [parámetros de función](Consultas.md#funciones) al crear filtros.
-
-
