@@ -2,6 +2,18 @@
 
 > Catalogo ofrece una API REST para consumir los datos en la base de datos. La API tiene direcciones URL predecibles orientadas a los recursos, se basa en códigos de estado HTTP estándar y utiliza JSON para la entrada y la salida de datos.
 
+**Open API Specification**
+
+Catalogo tiene un endpoint para mostrar las especificaciones Open API para describir y/o detallar el API REST. La idea es que los desarrolladores puedan hacer pruebas de manera más intuitivas.
+
+Para obtener las especificaciones pueden usar el siguiente endpoint:
+
+```
+GET /server/specs/oas
+```
+
+Una vez tengan las especificaciones del API, pueden usar el [Editor de Swagger](https://editor.swagger.io/) u otro, pegar las especificaciones en el editor para generar dinamicamente todos los endpoints existentes a los que su usuario tiene acceso.
+
 ## Introducción
 
 ### Autenticación
