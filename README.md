@@ -6,141 +6,29 @@
 
 ### Autenticación
 
-De forma predeterminada, todos los datos del catalogo están fuera del alcance de los usuarios no autenticados. Para obtener acceso a los datos protegidos, debe solicitar un token de acceso.
+De forma predeterminada, todos los datos del catalogo están fuera del alcance de los usuarios no autenticados. Para obtener acceso a los datos protegidos, **debe solicitar un token de acceso**.
 
-### Datos relacionales
+### REST API y los Datos relacionales
 
-De forma predeterminada, Catalogo solo recupera el valor de referencia de un campo relacional en los elementos. Para recuperar también datos anidados de un campo relacional, se puede utilizar el parámetro fields en REST o consultas anidadas regulares en GraphQL. Esto le permite recuperar el autor de su artículo incluido en los datos de los artículos o obtener puntos de entrada de registro relacionados para los datos de análisis de su aplicación, por ejemplo.
+De forma predeterminada, Catalogo solo recupera el valor de referencia de un campo relacional en los elementos. Para recuperar también datos anidados de un campo relacional, se puede utilizar el parámetro `fields` en REST. Esto le permite recuperar datos referenciados de un servicio.
 
-#### Creación / Actualización / Eliminación
+Para definir el ámbito de los campos que se devuelven por tipo de colección, puede usar la sintaxis `<field>:<scope>` del parámetro fields de la siguiente manera: 
 
-De manera similar a la búsqueda, el contenido relacional también se puede modificar profundamente.
-
-**De muchos a uno**
-
-Las relaciones de muchos a uno son bastante sencillas de gestionar relacionalmente. Simplemente puede enviar los cambios que desee como un objeto en la clave relacional de la colección. Por ejemplo, si quisieras crear un nuevo artículo destacado en tu página, podrías enviar:
-
-```JSON
-{
-	"featured_article": {
-		"title": "This is my new article!"
-	}
-}
+```http
+GET /items/services
+	?fields[]=name
+	&fields[]=description
+	&fields[]=legal_framework_ids.description
+	&fields[]=services_electronic_gov_type_ids.electronic_gov_type_id.type
 ```
 
-Esto creará un nuevo registro en la colección relacionada y guardará su clave principal en el campo de este elemento. Para actualizar un elemento existente, simplemente proporcione la clave principal con las actualizaciones y Catalogo lo tratará como una actualización en lugar de una creación:featured_article
+Otra alternativa seria:
 
-```JSON
-{
-	"featured_article": {
-		"id": 15,
-		"title": "This is an updated title for my article!"
-	}
-}
+```http
+GET /items/services
+	?fields[]=name,description,legal_framework_ids.description,services_electronic_gov_type_ids.electronic_gov_type_id.type
 ```
 
-Al ver que la relación de varios a uno almacena la clave externa en el propio campo, se puede eliminar el elemento anulando el campo:
-
-```JSON
-{
-	"featured_article": null
-}
-```
-
-**Uno a Muchos (/ Muchos-a-Varios)**
-
-Las relaciones de uno a varios y, por lo tanto, de varios a varios y de varios a cualquiera, se pueden actualizar de una de estas dos maneras:
-
-1. Básico
-
-La API devolverá campos de uno a varios como una matriz de claves o elementos anidados (según el parámetro). Puede utilizar esta misma estructura para seleccionar cuáles son los elementos relacionados:fields
-
-```JSON
-{
-	"children": [2, 7, 149]
-}
-```
-
-También puede proporcionar un objeto en lugar de una clave principal para crear nuevos elementos anidados sobre la marcha, o un objeto con una clave principal incluida para actualizar un elemento existente:
-
-```JSON
-{
-	"children": [
-		2, // assign existing item 2 to be a child of the current item
-		{
-			"name": "A new nested item"
-		},
-		{
-			"id": 149,
-			"name": "Assign and update existing item 149"
-		}
-	]
-}
-```
-
-Para eliminar elementos de esta relación, simplemente omítalos de la matriz:
-
-```JSON
-{
-	"children": [2, 149]
-}
-```
-
-Este método de actualización de uno a varios es muy útil para conjuntos de datos relacionales más pequeños.
-
-**"Detallado"**
-
-Como alternativa, puede proporcionar un objeto que detalle los cambios de la siguiente manera:
-
-```JSON
-{
-	"children": {
-		"create": [{ "name": "A new nested item" }],
-		"update": [{ "id": 149, "name": "A new nested item" }],
-		"delete": [7]
-	}
-}
-```
-
-Esto es útil si necesita tener un control más estricto sobre los cambios preconfigurados o cuando trabaja con un gran conjunto de datos relacionales.
-
-Varios a cualquiera (tipos de unión)
-Los campos de varios a cualquier funcionan de forma muy similar a un varios a varios "normal", con la excepción de que el campo relacionado puede extraer los campos de cualquiera de las colecciones relacionadas, por ejemplo:
-
-```JSON
-{
-	"sections": [
-		{
-			"collection": "headings",
-			"item": {
-				/* headings fields */
-			}
-		},
-		{
-			"collection": "paragraphs",
-			"item": {
-				/* paragraphs fields */
-			}
-		}
-	]
-}
-```
-
-### REST API
-
-Para definir el ámbito de los campos que se devuelven por tipo de colección, puede usar la sintaxis del parámetro fields de la siguiente manera:<field>:<scope>
-
-```
-GET /items/pages
-	?fields[]=sections.item:headings.id
-	&fields[]=sections.item:headings.title
-	&fields[]=sections.item:paragraphs.body
-	&fields[]=sections.item:paragraphs.background_color
-```
-
-> **Actualización**
->
-> La actualización de registros en un varios a cualquiera es idéntica a los otros tipos de relación.
 
 #### Método HTTP SEARCH
 
@@ -149,18 +37,18 @@ Al usar la API de REST para leer varios elementos mediante filtros (muy) avanzad
 **Antes**:
 
 ```HTTP
-GET /items/articles?filter[title][_eq]=Hello World
+GET /items/services?filter[name][_eq]=Hello World
 ```
 
 **Después**:
 
 ```HTTP
-SEARCH /items/articles
+SEARCH /items/services
 
 {
 	"query": {
 		"filter": {
-			"title": {
+			"name": {
 				"_eq": "Hello World"
 			}
 		}
@@ -168,7 +56,7 @@ SEARCH /items/articles
 }
 ```
 
-Hay mucha discusión sobre si se debe o no poner un cuerpo en una solicitud GET, usar POST para crear consultas de búsqueda o confiar en un método completamente diferente. A partir de ahora, hemos optado por alinearnos con la especificación del método HTTP SEARCH de IETF. Si bien reconocemos que esto todavía es un borrador de especificaciones, el método SEARCH se ha utilizado ampliamente antes en el mundo WebDAV (especificación) y, en comparación con las otras opciones disponibles, se siente como el "más limpio" y correcto para manejar esto en el futuro. Al igual que con todo lo demás, si tiene alguna idea, opinión o inquietud, nos encantaría conocer sus pensamientos.
+Hay mucha discusión sobre si se debe o no poner un cuerpo en una solicitud GET, usar POST para crear consultas de búsqueda o confiar en un método completamente diferente. A partir de ahora, hemos optado por alinearnos con la [especificación del método HTTP SEARCH de IETF](https://datatracker.ietf.org/doc/draft-ietf-httpbis-safe-method-w-body).
 
 **Lectura útil**:
 
