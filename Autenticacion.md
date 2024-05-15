@@ -4,14 +4,13 @@ Todos los datos dentro de la plataforma son privados de forma predeterminada. El
 
 ## Tokens de acceso
 
-Hay tres tipos de tokens que se pueden usar para autenticarse dentro de Directus.
+Hay tres tipos de tokens que se pueden usar para autenticarse dentro de Catalogo.
 
 **El token temporal (JWT)** es devuelto por el punto de conexión/mutación de inicio de sesión. Estos tokens tienen un tiempo de caducidad relativamente corto y, por lo tanto, son la opción más segura de usar. Los tokens se devuelven con un token de actualización que se puede usar para recuperar un nuevo token de acceso a través del punto de conexión o mutación de actualización.
 
-**El token de sesión (JWT)** también puede ser devuelto por el punto de conexión/mutación de inicio de sesión.
-Los tokens de sesión combinan un token de actualización y un token de acceso en una sola cookie. Estos tokens no deben tener un tiempo de caducidad corto como los tokens temporales, ya que no se pueden actualizar después de que hayan caducado.
+**El token de sesión (JWT)** también puede ser devuelto por el punto de conexión/mutación de inicio de sesión. Los tokens de sesión combinan un token de actualización y un token de acceso en una sola cookie. Estos tokens no deben tener un tiempo de caducidad corto como los tokens temporales, ya que no se pueden actualizar después de que hayan caducado.
 
-**El token estático** se pueden configurar para cada usuario de la plataforma y nunca caducan. Son menos seguros, pero bastante útiles para la comunicación de servidor a servidor. Se guardan como texto sin formato dentro de `directus_users.token`. Los tokens estáticos se crean en la configuración del usuario dentro del módulo de usuario de Directus Data Studio o actualizando el valor del `token` del usuario a través de la API.
+**El token estático** se pueden configurar para cada usuario de la plataforma y nunca caducan. Son menos seguros, pero bastante útiles para la comunicación de servidor a servidor.
 
 Una vez que tenga su token de acceso, hay tres formas de pasarlo a la API: en el encabezado o header `Authorization` de la solicitud, como cookie de sesión o a través del parámetro `access_token` de consulta.
 
@@ -97,117 +96,96 @@ POST /auth/refresh
 - `mode`: Si se debe enviar y recuperar el token de actualización en la respuesta JSON o en una cookie `httpOnly`. Uno de `json`, `cookie` o `session`.
 
 **Respuesta**
-access_token string
-Token de acceso temporal que se usará en las solicitudes de seguimiento. Nota: si lo usaste como modo en la solicitud, el token de acceso no se devolverá en el JSON.session
+- `access_token` **string**: Token de acceso temporal que se usará en las solicitudes de seguimiento. Nota: si lo usaste como modo en la solicitud, el token de acceso no se devolverá en el JSON.session
+- `expires` **integer**: Cuánto tiempo pasará antes de que caduque el token de acceso. El valor se expresa en milisegundos.
+- `refresh_token` **string**: El token que se puede usar para recuperar un nuevo token de acceso a través de `/auth/refresh`. Nota: si usaste `cookie` o `session` como el modo en la solicitud, el token de actualización no se devolverá en el JSON.
 
-expires integer
-Cuánto tiempo pasará antes de que caduque el token de acceso. El valor se expresa en milisegundos.
+#### Ejemplo
 
-refresh_token string
-El token que se puede usar para recuperar un nuevo token de acceso a través de /auth/refresh. Nota: si usaste o como el modo en la solicitud, el token de actualización no se devolverá en el JSON.cookiesession
-
-Ejemplo
-REPOSO
-GraphQL
-SDK (Sistema de traducción
+```http
 POST /auth/refresh
-
-
 {
 	"refresh_token": "gmPd...8wuB",
 	"mode": "json"
 }
-Cerrar sesión
+```
+
+## Cerrar sesión
+
 Invalide el token de actualización, destruyendo así la sesión del usuario.
 
-Pedir
-REPOSO
-GraphQL
-SDK (Sistema de traducción
+### Request
+
+```
 POST /auth/logout
-
-
 {
 	"refresh_token": refresh_token
 }
-Cuerpo de la solicitud
-refresh_token
-El token de actualización que se va a invalidar. Si tiene el token de actualización en una cookie a través de /auth/login, no es necesario que lo envíe aquí.
+```
 
-mode
-Si el token de actualización se envía en la respuesta JSON o en una cookie. Uno de , o .httpOnlyjsoncookiesession
+**Cuerpo de la solicitud**
+- `refresh_token`: El token de actualización que se va a invalidar. Si tiene el token de actualización en una cookie a través de /auth/login, no es necesario que lo envíe aquí.
+- `mode`: Si el token de actualización se envía en la respuesta JSON o en una cookie `httpOnly`. Uno de `json`, `cookie` o `session`.
 
-Ejemplo
-REPOSO
-GraphQL
-SDK (Sistema de traducción
+#### Ejemplo
+
+```
 POST /auth/logout
-
-
 {
 	"refresh_token": "gmPd...8wuB",
 	"mode": "json"
 }
-Solicitar restablecimiento de contraseña
+```
+
+## Solicitar restablecimiento de contraseña
 Solicite que se envíe un correo electrónico de restablecimiento de contraseña al usuario determinado.
 
-Pedir
-REPOSO
-GraphQL
-SDK (Sistema de traducción
+### Request
+
+```
 POST /auth/password/request
-
-
 {
 	"email": user_email
 }
-Cuerpo de la solicitud
-email Requerido
-Dirección de correo electrónico del usuario para el que solicitas el restablecimiento de contraseña.
+```
 
-reset_url
-Proporcione una URL de restablecimiento personalizada a la que le llevará el enlace del correo electrónico. El token de restablecimiento se pasará como parámetro.
-Nota: Debe configurar la variable de entorno PASSWORD_RESET_URL_ALLOW_LIST para habilitar esta función.
+**Cuerpo de la solicitud**
+- `email` **Requerido**: Dirección de correo electrónico del usuario para el que solicitas el restablecimiento de contraseña.
+- `reset_url`: Proporcione una URL de restablecimiento personalizada a la que le llevará el enlace del correo electrónico. El token de restablecimiento se pasará como parámetro.
 
-Ejemplo
-REPOSO
-GraphQL
-SDK (Sistema de traducción
+#### Ejemplo
+
+```
 POST /auth/password/request
-
-
 {
 	"email": "admin@example.com"
 }
-Restablecer una contraseña
+```
+
+## Restablecer una contraseña
+
 La solicitud de un punto de conexión de restablecimiento de contraseña envía un correo electrónico con un vínculo a la aplicación de administración (o a una ruta personalizada) que, a su vez, usa este punto de conexión para permitir que el usuario restablezca su contraseña.
 
-Pedir
-REPOSO
-GraphQL
-SDK (Sistema de traducción
+### Request
+
+```
 POST /auth/password/reset
-
-
 {
 	"token": password_reset_token,
 	"password": password
 }
-Cuerpo de la solicitud
-token Token de restablecimiento de contraseña requerido
-, tal y como se proporciona en el correo electrónico enviado por el punto de conexión de la solicitud.
+```
 
-password Requerido
-Nueva contraseña para el usuario.
+**Cuerpo de la solicitud**
+- `token` **Requerido**: Token de restablecimiento de contraseña, tal y como se proporciona en el correo electrónico enviado por el punto de conexión de la solicitud.
+- `password` **Requerido**: Nueva contraseña para el usuario.
 
-Ejemplo
-REPOSO
-GraphQL
-SDK (Sistema de traducción
+#### Ejemplo
+
+```
 POST /auth/password/reset
-
-
 {
 	"token": "eyJh...KmUk",
-	"password": "d1r3ctu5"
+	"password": "c4t4l0g0"
 }
+```
