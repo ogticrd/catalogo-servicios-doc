@@ -8,6 +8,8 @@
 
 De forma predeterminada, todos los datos del catalogo están fuera del alcance de los usuarios no autenticados. Para obtener acceso a los datos protegidos, **debe solicitar un token de acceso**.
 
+Más sobre Autenticación en catalogo [aqui](Autenticacion.md).
+
 ### REST API y los Datos relacionales
 
 De forma predeterminada, Catalogo solo recupera el valor de referencia de un campo relacional en los elementos. Para recuperar también datos anidados de un campo relacional, se puede utilizar el parámetro `fields` en REST. Esto le permite recuperar datos referenciados de un servicio.
@@ -29,6 +31,7 @@ GET /items/services
 	?fields[]=name,description,legal_framework_ids.description,services_electronic_gov_type_ids.electronic_gov_type_id.type
 ```
 
+Para conocer más sobre las consultas en catalogo vsita este [enlace](Consultas.md).
 
 #### Método HTTP SEARCH
 
