@@ -175,5 +175,5 @@ El elemento primario de nivel superior se devolverá si una de las categorías t
 }
 ```
 
-obtendrá todos los elementos principales que no tengan la categoría "Receta"
+obtendrá todos los elementos principales que no tengan la categoría "Receta".
 

@@ -43,8 +43,6 @@ GET /items/services
 	?fields[]=name,description,legal_framework_ids.description,services_electronic_gov_type_ids.electronic_gov_type_id.type
 ```
 
-Para conocer más sobre las consultas en catalogo vsita este [enlace](Consultas.md).
-
 #### Método HTTP SEARCH
 
 Al usar la API de REST para leer varios elementos mediante filtros (muy) avanzados, es posible que se encuentre con el problema de que la dirección URL simplemente no puede contener suficientes datos para incluir la estructura de consulta completa. En esos casos, puede usar el método HTTP SEARCH como reemplazo directo de GET, donde se le permite colocar la consulta en el cuerpo de la solicitud de la siguiente manera:
@@ -105,3 +103,5 @@ A continuación se muestran los códigos de error globales utilizados en Catalog
 > **Seguridad**
 >
 > Para evitar que se filtren los elementos existentes, todas las acciones de los elementos no existentes devolverán un error FORBIDDEN.
+
+Para conocer más sobre los [items](Items.md), [consultas](Consultas.md) y [filtrado](Filtrado.md) en catalogo visita los enlaces correspondientes.

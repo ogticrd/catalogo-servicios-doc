@@ -22,7 +22,7 @@ GET /items/:collection
 SEARCH /items/:collection
 ```
 
-Si utiliza SEARCH, puede proporcionar un objeto de consulta como cuerpo de la solicitud. Más información sobre SEARCH ->
+Si utiliza SEARCH, puede proporcionar un objeto de consulta como cuerpo de la solicitud. Más información sobre [SEARCH](README.md#método-http-search).
 
 **Parámetros de consulta**
 
